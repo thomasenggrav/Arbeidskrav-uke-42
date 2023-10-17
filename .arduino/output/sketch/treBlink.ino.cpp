@@ -1,3 +1,5 @@
+#include <Arduino.h>
+#line 1 "C:\\Users\\thoma\\OneDrive\\Skrivebord\\Ingeniørprojekt\\Github\\Tre blinkende Leds\\treBlink\\treBlink.ino"
 const int redLedPin = 13;
 const int yellowLedPin = 12;
 const int greenLedPin = 11;
@@ -19,6 +21,19 @@ int current_color = 0;
 const long gulBlinkInterval = 850;  // Interval in milliseconds (850ms)
 const long fargeBlinkInterval = 500;
 
+#line 22 "C:\\Users\\thoma\\OneDrive\\Skrivebord\\Ingeniørprojekt\\Github\\Tre blinkende Leds\\treBlink\\treBlink.ino"
+void setup();
+#line 29 "C:\\Users\\thoma\\OneDrive\\Skrivebord\\Ingeniørprojekt\\Github\\Tre blinkende Leds\\treBlink\\treBlink.ino"
+void loop();
+#line 36 "C:\\Users\\thoma\\OneDrive\\Skrivebord\\Ingeniørprojekt\\Github\\Tre blinkende Leds\\treBlink\\treBlink.ino"
+void gulBlink();
+#line 51 "C:\\Users\\thoma\\OneDrive\\Skrivebord\\Ingeniørprojekt\\Github\\Tre blinkende Leds\\treBlink\\treBlink.ino"
+void rodBlink();
+#line 64 "C:\\Users\\thoma\\OneDrive\\Skrivebord\\Ingeniørprojekt\\Github\\Tre blinkende Leds\\treBlink\\treBlink.ino"
+void gronnBlink();
+#line 77 "C:\\Users\\thoma\\OneDrive\\Skrivebord\\Ingeniørprojekt\\Github\\Tre blinkende Leds\\treBlink\\treBlink.ino"
+void hvilkenFarge();
+#line 22 "C:\\Users\\thoma\\OneDrive\\Skrivebord\\Ingeniørprojekt\\Github\\Tre blinkende Leds\\treBlink\\treBlink.ino"
 void setup() {
   pinMode(redLedPin, OUTPUT);
   pinMode(yellowLedPin, OUTPUT);

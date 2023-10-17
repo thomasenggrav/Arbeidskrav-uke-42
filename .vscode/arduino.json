@@ -2,5 +2,5 @@
     "board": "arduino:avr:uno",
     "programmer": "avrisp",
     "output": ".arduino/output",
-    "sketch": "movingGjennomsnitt/movingGjennomsnitt.ino"
+    "sketch": "treBlink/treBlink.ino"
 }

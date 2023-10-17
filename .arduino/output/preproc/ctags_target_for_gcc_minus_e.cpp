@@ -1,70 +1,100 @@
-# 1 "C:\\Users\\thoma\\OneDrive\\Skrivebord\\Ingeniørprojekt\\Github\\Tre blinkende Leds\\movingGjennomsnitt\\movingGjennomsnitt.ino"
-int intervalLong = 1000; //Blinke intervaller
-int intervalShort = 166;
+# 1 "C:\\Users\\thoma\\OneDrive\\Skrivebord\\Ingeniørprojekt\\Github\\Tre blinkende Leds\\treBlink\\treBlink.ino"
+const int redLedPin = 13;
+const int yellowLedPin = 12;
+const int greenLedPin = 11;
+const int buttonPin = 2;
+unsigned long previousMillisYellow = 0;
+unsigned long previousMillisColor = 0;
 
-const int ledPin = 13; //Deklaerer LedPin
-int sensorPin = A0; //Setter inputPin til A0
+bool greenLedOn = false;
+bool redLedOn = false;
 
-const int numMalinger = 5; //Vil ha gjennomsnitt av 5 målinger
-int malinger[numMalinger]; //Lager array til målinger
-int readIndex = 0;
-int total = 0; //Totalen til målingene
-int average = 0; //Gjennomsnittet til målingene
+bool buttonState = 0x0;
+bool lastButtonState = 0x0;
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50;
 
-unsigned long previousMillis = 0; //Forrige millis
-
-int blinkState = 0x0; //Holde styr på led state
+int current_color = 0;
 
 
-void setup()
-{
-  pinMode(ledPin, 0x1);
-  Serial.begin(9600);
-  for (int thisReading = 0; thisReading < numMalinger; thisReading++) { //Initialiserer alle målinger til 0
-    malinger[thisReading] = 0;
-  }
+const long gulBlinkInterval = 850; // Interval in milliseconds (850ms)
+const long fargeBlinkInterval = 500;
+
+void setup() {
+  pinMode(redLedPin, 0x1);
+  pinMode(yellowLedPin, 0x1);
+  pinMode(greenLedPin, 0x1);
+  pinMode(buttonPin, 0x0);
 }
 
-void loop()
-{
-  smoothing(); //Smoothing og blinke funksjoner
-  blinkeFart();
+void loop() {
+  gulBlink();
+  hvilkenFarge();
 }
 
-void smoothing() {
-  total = total - malinger[readIndex]; //Trekk ifra siste verdi
-  malinger[readIndex] = analogRead(sensorPin); //Les fra sensor
-  total = total + malinger[readIndex]; //Legg til verdi til totalen
-  readIndex = readIndex + 1; //Gå videre til neste posisjon i array
 
-  if (readIndex >= numMalinger) { //På slutten av array går vi tilbake til starten
-    readIndex = 0;
-  }
 
-  average = total / numMalinger; //Regn ut gj.snitt
-  Serial.println(average); //Print til Serial
-  delay(1);
-}
+void gulBlink(){
+   unsigned long currentMillis = millis();
 
-void blinky(unsigned long currentMillis, int interval) {
-  if (currentMillis - previousMillis >= interval) { //Sjekker om nok tid har passert
-    previousMillis = currentMillis; //Oppdaterer previousMillis
-    if (blinkState == 0x0) { //Endrer på BlinkState, basert på tidligere state
-      digitalWrite(ledPin, 0x1);
-      blinkState = 0x1;
+  if (currentMillis - previousMillisYellow >= gulBlinkInterval) {
+    previousMillisYellow = currentMillis;
+
+    if (digitalRead(yellowLedPin) == 0x0) {
+      digitalWrite(yellowLedPin, 0x1);
     } else {
-      digitalWrite(ledPin, 0x0);
-      blinkState = 0x0;
+      digitalWrite(yellowLedPin, 0x0);
     }
   }
 }
 
-void blinkeFart(){
+
+void rodBlink(){
   unsigned long currentMillis = millis();
-   if (average >= 100) {
-    blinky(currentMillis, intervalLong); //Kaller på blinky funksjonen og bruker den med intervalLong som er satt til 1000
-  } //hvis average er større enn eller lik 100
-  else {
-    blinky(currentMillis, intervalShort); //Kaller på blinky og bruker den med intervalShort som er satt til 166
-  } //hvis average er mindre enn 100
+  if (currentMillis - previousMillisColor >= fargeBlinkInterval) {
+    previousMillisColor = currentMillis;
+
+    if (digitalRead(redLedPin) == 0x0) {
+      digitalWrite(redLedPin, 0x1);
+    } else {
+      digitalWrite(redLedPin, 0x0);
+    }
+  }
+}
+
+void gronnBlink(){
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillisColor >= fargeBlinkInterval) {
+    previousMillisColor = currentMillis;
+
+    if (digitalRead(greenLedPin) == 0x0) {
+      digitalWrite(greenLedPin, 0x1);
+    } else {
+      digitalWrite(greenLedPin, 0x0);
+    }
+  }
+}
+
+void hvilkenFarge() {
+  buttonState = digitalRead(buttonPin);
+  unsigned long currentMillis = millis();
+
+  if (buttonState != lastButtonState) {
+    if (currentMillis - lastDebounceTime >= debounceDelay) {
+      if (buttonState == 0x0) {
+        current_color = 1 - current_color; // Toggle between 0 and 1
+      }
+      lastDebounceTime = currentMillis;
+    }
+  }
+  lastButtonState = buttonState;
+
+  if (current_color == 0) {
+    rodBlink();
+    digitalWrite(greenLedPin, 0x0);
+  }
+  else if (current_color == 1) {
+    gronnBlink();
+    digitalWrite(redLedPin, 0x0);
+  }
 }
