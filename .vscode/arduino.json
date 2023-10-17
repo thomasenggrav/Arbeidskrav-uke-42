@@ -2,5 +2,5 @@
     "board": "arduino:avr:uno",
     "programmer": "avrisp",
     "output": ".arduino/output",
-    "sketch": "vanligGjennomsnitt/vanligGjennomsnitt.ino"
+    "sketch": "movingGjennomsnitt/movingGjennomsnitt.ino"
 }
