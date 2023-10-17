@@ -37,7 +37,7 @@ void smoothing() {
   total = total + malinger[readIndex]; //Legg til verdi til totalen
   readIndex = readIndex + 1; //Gå videre til neste posisjon i array
 
-  if (readIndex >= malinger) { //På slutten av array går vi tilbake til starten
+  if (readIndex >= numMalinger) { //På slutten av array går vi tilbake til starten
     readIndex = 0;
   }
 
