@@ -10,6 +10,12 @@ unsigned long lastDebounceTime = 0;   // Tidspunkt for forrige debouncing
 unsigned long debounceDelay = 50;  // Tid i millisekunder for debouncing
 
 int current_color = 0;  // Variabel for å holde styr på nåværende LED-farge (0: rød, 1: grønn)
+int current_modus = 0;
+
+unsigned long buttonPressTime = 0; // Time when the button was pressed
+unsigned long buttonReleaseTime = 0; // Time when the button was released
+unsigned long buttonDuration = 0;    // Duration the button was presse
+
 
 const long gulBlinkInterval = 850;   // Interval i millisekunder (850ms) for gul LED
 const long fargeBlinkInterval = 500;  // Interval i millisekunder (500ms) for rød og grønn LED
@@ -18,14 +24,15 @@ void setup() {
   pinMode(redLedPin, OUTPUT);      // Setter rød LED-pin til utgang
   pinMode(yellowLedPin, OUTPUT);   // Setter gul LED-pin til utgang
   pinMode(greenLedPin, OUTPUT);    // Setter grønn LED-pin til utgang
-  pinMode(buttonPin, INPUT);       // Setter knapp-pin til inngang
+  pinMode(buttonPin, INPUT_PULLUP);      // Setter knapp-pin til inngang
+  Serial.begin(9600);
 }
 
 void loop() {
-  gulBlink();       // Kall funksjonen for å blinke gul LED
-  hvilkenFarge();   // Kall funksjonen for å velge rød eller grønn LED basert på knapptrykk
+  buttonPress(); // Kall på buttonPress funksjon
+  gulBlink();  // Kall funksjonen for å blinke gul LED
+  blink();     // Kall på blink funksjon
 }
-
 
 
 void gulBlink(){
@@ -69,26 +76,45 @@ void gronnBlink(){
   }
 }
 
-void hvilkenFarge() {
-  buttonState = digitalRead(buttonPin);   // Leser button state
-  unsigned long currentMillis = millis();
 
-  if (buttonState != lastButtonState) {   // Om button state har endret seg.
-    if (currentMillis - lastDebounceTime >= debounceDelay) {  // Debounce delay for ordentlig knappetrykk
-      if (buttonState == LOW) {
-        current_color = 1 - current_color;  // Endrer verdi på current color mellom 0 og 1
-      }
-      lastDebounceTime = currentMillis;
-    }
+void buttonPress(){
+  
+  unsigned long modusTrykkLengde = 2000;    //To sekunder for modus endring
+  static int lastButtonState = LOW;         //Forrige buttonState
+  static unsigned long buttonPressStartTime = 0;    //Start tid på knappetrykk
+  int buttonState = digitalRead(buttonPin);         //Leser knappe state
+  unsigned long buttonPressDuration = millis() - buttonPressStartTime;  //Hvor langt knappetrykket er
+
+ if (buttonState == HIGH && lastButtonState == LOW) {       //Om knappen trykkes kort så endrer current color
+    buttonPressStartTime = millis();                        //Start av knappetrykk
+    Serial.println("Button Pressed");
+	current_color = 1 - current_color;
   }
-  lastButtonState = buttonState;
 
-  if (current_color == 0) {     // Om current color er 0, blink red.
+ if (buttonState == HIGH && buttonPressDuration >= modusTrykkLengde) {      //Om knappetrykket er lengre endres modus
+    Serial.println("Button Long Pressed");
+    current_modus = 1 - current_modus;
+    Serial.println(current_modus);
+  }
+
+ lastButtonState = buttonState;     //Forrige button state
+}
+
+void blink(){
+  if(current_color == 0 && current_modus == 0){     //Endrer farge og modus i forhold til hva current_color og current_modus er
     rodBlink();
     digitalWrite(greenLedPin, LOW);
-  } 
-  else if (current_color == 1) {    // Om current color er 1, blink green.
+  }
+  if(current_color == 0 && current_modus == 1){
+    digitalWrite(redLedPin, HIGH);
+    digitalWrite(greenLedPin, LOW);
+  }
+  if(current_color == 1 && current_modus == 0){
     gronnBlink();
     digitalWrite(redLedPin, LOW);
+  }
+  if(current_color == 1 && current_modus == 1){
+    digitalWrite(redLedPin, LOW);
+    digitalWrite(greenLedPin, HIGH);
   }
 }

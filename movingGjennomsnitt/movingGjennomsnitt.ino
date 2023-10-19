@@ -17,8 +17,8 @@ int blinkState = LOW;  //Holde styr på led state
 
 void setup()
 {
-  pinMode(ledPin, OUTPUT);
-  Serial.begin(9600);
+  pinMode(ledPin, OUTPUT);  //Pin mode
+  Serial.begin(9600);       // Starter serial kommuniskasjon
   for (int thisReading = 0; thisReading < numMalinger; thisReading++) {		//Initialiserer alle målinger til 0
     malinger[thisReading] = 0;
   }
@@ -26,8 +26,8 @@ void setup()
 
 void loop()
 {
-  smoothing();				//Smoothing og blinke funksjoner
-  blinkeFart();
+  smoothing();				// Kall på smoothing
+  blinkeFart();       // Kall på blinkeFart
 }
 
 void smoothing() {
